@@ -1,0 +1,17 @@
+.logout_container{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 400px;
+    /* height: 250px; */
+    /* margin: auto; */
+    /* min-height: 100%; */
+    background-color: var(--primary_color);
+    border-radius: 10px;
+    padding: 40px 30px;
+    box-shadow: 0 0 5px #d5d5d5;
+}
+.logout_container p{
+    text-align: center;
+}
