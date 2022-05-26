@@ -17,8 +17,8 @@
     align-items: center;
 }
 .filter_container input{
-    /* width: 800px; */
-    width: 400px;
+    width: 800px;
+    /* width: 400px; */
 }
 
 .top_holder {
