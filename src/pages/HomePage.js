@@ -29,7 +29,6 @@ export default function HomePage() {
   }, []);
 
   const filterByName = () => {
-    // console.log("emerson");
     setTableData(
       JSON_DATA.filter((item) => {
         if (

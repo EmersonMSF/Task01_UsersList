@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./loginPage.css";
 import "./updateDataForm.css";
+import { ValidateEmail } from "../conponents/HelperFunction";
+import ErrorModalBox from "../conponents/ErrorModalBox";
 
 export default function UpdateDataForm(props) {
   const roleList = ["admin", "user"];
@@ -27,10 +29,44 @@ export default function UpdateDataForm(props) {
     });
   }, []);
 
+  const [errorMessage, setErrorMessage] = useState({
+    active: false,
+    message: null,
+  });
+  function ShowErrorMessage(messageContent) {
+    let errorMessageInterval = setInterval(() => {
+      setErrorMessage({
+        ...errorMessage,
+        active: false,
+      });
+
+      clearInterval(errorMessageInterval);
+    }, 3000);
+
+    setErrorMessage({
+      active: true,
+      message: messageContent,
+    });
+  }
+
   const updateData = () => {
     let usersData = JSON.parse(localStorage.getItem("users"));
 
     console.log(usersData);
+
+    if (userDetails.username == "" || userDetails.username == null) {
+      ShowErrorMessage("Please enter username");
+      return;
+    } else if (userDetails.dob == "" || userDetails.dob == null) {
+      ShowErrorMessage("Please enter DOB");
+      return;
+    } else if (userDetails.email == "" || userDetails.email == null) {
+      ShowErrorMessage("Please enter email");
+      return;
+    } else if (!ValidateEmail(userDetails.email)) {
+      ShowErrorMessage("Please enter valid email id");
+      return;
+    }
 
     usersData.filter((item) => {
       if (item.userDetails.id === id) {
@@ -44,6 +80,8 @@ export default function UpdateDataForm(props) {
     console.log("usersData", usersData);
 
     localStorage.setItem("users", JSON.stringify(usersData));
+
+    ShowErrorMessage("Updated successfully");
   };
 
   return (
@@ -107,11 +145,16 @@ export default function UpdateDataForm(props) {
         />
       </span>
 
-      <div className="action_btns">
+      <div className="action_btns" style={{ justifyContent: "center" }}>
         <button className="btn btn1" onClick={updateData}>
           Update
         </button>
       </div>
+
+      <ErrorModalBox
+        message={errorMessage.message}
+        activeStatus={errorMessage.active}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ErrorModalBox from "../conponents/ErrorModalBox";
 import "./loginPage.css";
 
 function LoginPage() {
@@ -11,6 +12,27 @@ function LoginPage() {
     username: "",
     password: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState({
+    active: false,
+    message: null,
+  });
+
+  function showErrorMessage(messageContent) {
+    let errorMessageInterval = setInterval(() => {
+      setErrorMessage({
+        ...errorMessage,
+        active: false,
+      });
+
+      clearInterval(errorMessageInterval);
+    }, 3000);
+
+    setErrorMessage({
+      active: true,
+      message: messageContent,
+    });
+  }
 
   // const [errorMessage, setErrorMessage] = useState({});
 
@@ -51,7 +73,19 @@ function LoginPage() {
         <button
           className="btn btn1 loginBtn"
           onClick={() => {
-            console.log("login now");
+            if (loginDetails.username == "") {
+              console.log("details are empty");
+              showErrorMessage("Please enter username");
+              return;
+            } else if (loginDetails.password == "") {
+              showErrorMessage("Please enter password");
+              return;
+            } else if (loginDetails.password.length < 8) {
+              showErrorMessage("Password is short");
+              return;
+            }
+            console.log("details are empty 2");
+
             JSON_DATA.filter((item) => {
               if (item.userDetails.email === loginDetails.username) {
                 console.log(true);
@@ -63,8 +97,11 @@ function LoginPage() {
                         role: item.userDetails.role,
                       },
                     })
-                  : console.log("login failed");
+                  : showErrorMessage("Username or password is wrong!");
 
+                return;
+              } else {
+                showErrorMessage("Username or password is wrong!");
                 return;
               }
             });
@@ -82,6 +119,12 @@ function LoginPage() {
           Create Account
         </button>
       </div>
+
+      <ErrorModalBox
+        message={errorMessage.message}
+        activeStatus={errorMessage.active}
+      />
+      {/* <h1>Error message</h1> */}
     </div>
   );
 }

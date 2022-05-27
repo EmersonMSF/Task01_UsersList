@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorModalBox from "../conponents/ErrorModalBox";
 import "./loginPage.css";
+
+import { ValidateEmail } from "../conponents/HelperFunction";
+
 export default function CreateAccount() {
   const navigate = useNavigate();
   const roleList = ["Admin", "User"];
@@ -17,16 +21,65 @@ export default function CreateAccount() {
     re_password: null,
   });
 
+  const [errorMessage, setErrorMessage] = useState({
+    active: false,
+    message: null,
+  });
+  function ShowErrorMessage(messageContent) {
+    let errorMessageInterval = setInterval(() => {
+      setErrorMessage({
+        ...errorMessage,
+        active: false,
+      });
+
+      clearInterval(errorMessageInterval);
+    }, 3000);
+
+    setErrorMessage({
+      active: true,
+      message: messageContent,
+    });
+  }
+
   const [localStorageValues, setLocalStorageValues] = useState(JSON_DATA);
 
   const submitBtn = () => {
     console.log("submit btn");
-    console.log(userDetails);
+    // console.log(userDetails);
 
     // setLocalStorageValues((oldArray) => [...oldArray, { userDetails }]);
 
     // if (localStorage.myList === undefined) {
     // console.log("calling useEffect");
+
+    if (userDetails.username == "" || userDetails.username == null) {
+      ShowErrorMessage("Please enter username");
+      return;
+    } else if (userDetails.dob == "" || userDetails.dob == null) {
+      ShowErrorMessage("Please enter DOB");
+      return;
+    } else if (userDetails.email == "" || userDetails.email == null) {
+      ShowErrorMessage("Please enter email");
+      return;
+    } else if (!ValidateEmail(userDetails.email)) {
+      ShowErrorMessage("Please enter valid email id");
+      return;
+    } else if (userDetails.password == "" || userDetails.password == null) {
+      ShowErrorMessage("Please enter password");
+      return;
+    } else if (userDetails.password.length < 8) {
+      ShowErrorMessage("Password is short");
+      return;
+    } else if (
+      userDetails.re_password == "" ||
+      userDetails.re_password == null
+    ) {
+      ShowErrorMessage("Please enter re_password");
+      return;
+    } else if (!(userDetails.password === userDetails.re_password)) {
+      ShowErrorMessage("Password are not same");
+      return;
+    }
 
     if (JSON_DATA === null) {
       JSON_DATA = [];
@@ -37,6 +90,8 @@ export default function CreateAccount() {
 
     localStorage.setItem("users", JSON.stringify(JSON_DATA));
     // }
+
+    ShowErrorMessage("Login successful");
   };
 
   // useEffect(() => {
@@ -143,6 +198,11 @@ export default function CreateAccount() {
           Login
         </button>
       </div>
+
+      <ErrorModalBox
+        message={errorMessage.message}
+        activeStatus={errorMessage.active}
+      />
     </div>
   );
 }
